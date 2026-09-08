@@ -1,0 +1,45 @@
+name: Finalize Events 1.0.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/bootstrap-final.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Reconstruct source archive
+        run: |
+          cat .bootstrap/events-source.part* | base64 -d > /tmp/events-source.tar.gz
+          echo '3a18f044247ba67f9a73009eb88f122a057052165f3fe85a400cf35e6caba61a  /tmp/events-source.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/events-source.tar.gz
+      - name: Validate PHP
+        run: find component package tests -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Validate XML and contracts
+        run: python3 build/validate.py && php tests/core-integration-smoke.php
+      - name: Deterministic package check
+        run: |
+          python3 build/build.py
+          cp dist/SHA256SUMS.txt /tmp/events-sums
+          python3 build/build.py
+          diff -u /tmp/events-sums dist/SHA256SUMS.txt
+          for f in dist/*.zip; do unzip -t "$f" >/dev/null; done
+      - name: Publish source tree
+        run: |
+          rm -rf .bootstrap
+          rm -f bootstrap_events.py .github/workflows/bootstrap-events.yml .github/workflows/bootstrap-final.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish Events 1.0.0 Core-first baseline"
+          git push origin HEAD:main
