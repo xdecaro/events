@@ -4,9 +4,9 @@ Events è il componente Joomla per eventi, sessioni, capienza, registrazioni, li
 
 - Componente: `com_decaroevents`
 - Pacchetto: `pkg_decaroevents`
-- Versione: `1.0.0`
+- Versione: `1.1.0`
 - Joomla: 5/6
 - PHP: 8.1+
-- Core by xdecaro: 1.1.0+ obbligatorio
+- Core by xdecaro: 1.3.0+ obbligatorio
 
-Events usa Core esclusivamente per infrastruttura condivisa (asset/UI e contratti di riferimento). La logica eventi rimane in Events.
+Events usa Core esclusivamente per infrastruttura condivisa (asset/UI e contratti di riferimento) tramite il namespace canonico `xdecaro\Core`. La logica eventi rimane in Events.

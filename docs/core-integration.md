@@ -1,9 +1,13 @@
 # Xdecaro Core integration
 
-Events 1.0.0 uses Core by xdecaro 1.1.0+ for shared Web Asset Manager assets and the public cross-product reference contract. The Joomla component identifier is `com_decaroevents`.
+Events 1.1.0 richiede Core by xdecaro 1.3.0+ e usa esclusivamente il namespace canonico `xdecaro\Core` per gli asset condivisi e il contratto pubblico cross-product.
 
-Published entity types: `event`, `session`, `registration`.
+Identità Joomla stabile: `com_decaroevents`.
 
-Use `EntityReference` and `RelationReference` only through Events' `CoreIntegrationService`. Events never reads another product's private tables. Competitions references use its stable technical identifier `com_decarodcl`.
+Entità pubbliche: `event`, `session`, `registration`.
 
-Events owns event/session/capacity/registration/waitlist/check-in state. Core contains no Events business logic.
+Le integrazioni usano `xdecaro\Core\Integration\EntityReference` e `xdecaro\Core\Integration\RelationReference` tramite `CoreIntegrationService`. Il namespace deprecato `Xdecaro\Core` non è usato da Events 1.1.0.
+
+Events non legge né scrive tabelle private di altri prodotti. Gli identificatori esterni devono essere quelli pubblicati dai rispettivi componenti e non vanno duplicati come logica di dominio in Events.
+
+Events resta proprietario di eventi, sessioni, capienza, registrazioni, lista d'attesa e check-in. Core non contiene logica Events.

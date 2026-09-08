@@ -1,0 +1,2 @@
+-- Events 1.1.0
+-- No database schema changes. This marker keeps Joomla schema version tracking aligned with the release.

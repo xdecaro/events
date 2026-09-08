@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="package" method="upgrade">
-  <name>Events by xdecaro</name><packagename>decaroevents</packagename><version>1.0.0</version><creationDate>2026-09</creationDate><author>Luca De Caro</author><license>GNU General Public License version 2 or later</license><scriptfile>script.php</scriptfile>
+  <name>Events by xdecaro</name>
+  <packagename>decaroevents</packagename>
+  <version>1.1.0</version>
+  <creationDate>2026-09</creationDate>
+  <author>Luca De Caro</author>
+  <license>GNU General Public License version 2 or later</license>
+  <scriptfile>script.php</scriptfile>
   <files><file type="component" id="com_decaroevents">com_decaroevents.zip</file></files>
   <updateservers><server type="extension" priority="1" name="Events by xdecaro">https://raw.githubusercontent.com/xdecaro/events/main/updates/pkg_decaroevents.xml</server></updateservers>
 </extension>
