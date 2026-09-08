@@ -17,14 +17,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
-        with: {php-version: '8.3', coverage: none}
+        with:
+          php-version: '8.3'
+          coverage: none
       - name: Read version
         run: echo "VERSION=$(cat VERSION)" >> "$GITHUB_ENV"
       - name: Refuse existing release
-        env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
-        run: if gh release view "v${VERSION}" >/dev/null 2>&1; then echo "Release exists"; exit 1; fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "Release exists"
+            exit 1
+          fi
       - name: Validate
-        run: find component package tests -name '*.php' -print0 | xargs -0 -n1 php -l && python3 build/validate.py && php tests/core-integration-smoke.php
+        run: |
+          find component package tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          python3 build/validate.py
+          php tests/core-integration-smoke.php
       - name: Build
         run: python3 build/build.py
       - name: Synchronize checksum
@@ -35,8 +45,15 @@ jobs:
           grep -q "<sha256>${SHA}</sha256>" updates/pkg_decaroevents.xml
           unzip -t "dist/pkg_decaroevents_${VERSION}.zip" >/dev/null
       - name: Release
-        env: {GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'}
-        run: gh release create "v${VERSION}" "dist/com_decaroevents_${VERSION}.zip" "dist/pkg_decaroevents_${VERSION}.zip" dist/SHA256SUMS.txt --title "Events by xdecaro ${VERSION}" --notes "Events ${VERSION}: Core-first event, session, capacity, registration, waitlist and check-in management."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${VERSION}" \
+            "dist/com_decaroevents_${VERSION}.zip" \
+            "dist/pkg_decaroevents_${VERSION}.zip" \
+            dist/SHA256SUMS.txt \
+            --title "Events by xdecaro ${VERSION}" \
+            --notes "Events ${VERSION}: Core-first event, session, capacity, registration, waitlist and check-in management."
       - name: Publish feed checksum
         run: |
           git config user.name "github-actions[bot]"
