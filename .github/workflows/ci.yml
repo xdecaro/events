@@ -1,0 +1,29 @@
+name: Events CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    strategy:
+      matrix:
+        php: ['8.1','8.3']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '${{ matrix.php }}', coverage: none}
+      - name: PHP syntax
+        run: find component package tests -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: XML and metadata
+        run: python3 build/validate.py
+      - name: Smoke
+        run: php tests/core-integration-smoke.php
+      - name: Deterministic build A
+        run: python3 build/build.py && cp dist/SHA256SUMS.txt /tmp/sums
+      - name: ZIP integrity
+        run: for f in dist/*.zip; do unzip -t "$f" >/dev/null; done
+      - name: Deterministic build B
+        run: python3 build/build.py && diff -u /tmp/sums dist/SHA256SUMS.txt
