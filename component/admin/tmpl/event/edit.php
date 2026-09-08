@@ -1,0 +1,2 @@
+<?php defined('_JEXEC') or die; use Joomla\CMS\HTML\HTMLHelper; use Joomla\CMS\Router\Route;?>
+<form action="<?= Route::_('index.php?option=com_decaroevents&layout=edit&id='.(int)($this->item->id??0)) ?>" method="post" id="adminForm" name="adminForm"><div class="xdecaro-scope"><section class="xdecaro-card"><div class="xdecaro-card__body"><?= $this->form->renderFieldset('details') ?></div></section></div><input type="hidden" name="task" value=""><?= HTMLHelper::_('form.token') ?></form>

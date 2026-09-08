@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset name="details">
+    <field name="id" type="hidden" />
+    <field name="title" type="text" label="JGLOBAL_TITLE" required="true" maxlength="255" />
+    <field name="alias" type="text" label="JFIELD_ALIAS_LABEL" maxlength="255" />
+    <field name="event_type" type="text" label="COM_DECAROEVENTS_FIELD_TYPE" maxlength="100" />
+    <field name="description" type="textarea" label="JGLOBAL_DESCRIPTION" rows="8" filter="raw" />
+    <field name="location" type="text" label="COM_DECAROEVENTS_FIELD_LOCATION" maxlength="255" />
+    <field name="start_at" type="calendar" label="COM_DECAROEVENTS_FIELD_START" required="true" showtime="true" filter="user_utc" />
+    <field name="end_at" type="calendar" label="COM_DECAROEVENTS_FIELD_END" showtime="true" filter="user_utc" />
+    <field name="capacity" type="number" label="COM_DECAROEVENTS_FIELD_CAPACITY" min="0" hint="COM_DECAROEVENTS_CAPACITY_UNLIMITED" />
+    <field name="registration_open" type="radio" label="COM_DECAROEVENTS_FIELD_REGISTRATION_OPEN" default="0" layout="joomla.form.field.radio.switcher"><option value="1">JYES</option><option value="0">JNO</option></field>
+    <field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" default="1" />
+    <field name="published" type="list" label="JSTATUS" default="1"><option value="1">JPUBLISHED</option><option value="0">JUNPUBLISHED</option></field>
+  </fieldset>
+</form>

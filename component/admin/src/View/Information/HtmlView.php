@@ -1,0 +1,2 @@
+<?php
+namespace Xdecaro\Component\Decaroevents\Administrator\View\Information; defined('_JEXEC') or die; use Joomla\CMS\Language\Text; use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView; use Joomla\CMS\Toolbar\ToolbarHelper; use Xdecaro\Component\Decaroevents\Administrator\Helper\CoreUiHelper; final class HtmlView extends BaseHtmlView { public array $info=[]; public function display($tpl=null):void{CoreUiHelper::useComponents();$this->info=$this->get('Information');ToolbarHelper::title(Text::_('COM_DECAROEVENTS_INFORMATION'),'info-circle');parent::display($tpl);} }

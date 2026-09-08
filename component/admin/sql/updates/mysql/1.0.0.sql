@@ -1,0 +1,2 @@
+-- Events by xdecaro 1.0.0 schema is created by install.mysql.utf8mb4.sql.
+-- Marker for Joomla schema version tracking.

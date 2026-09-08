@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form><fieldset name="details">
+  <field name="id" type="hidden" />
+  <field name="event_id" type="sql" label="COM_DECAROEVENTS_EVENT" query="SELECT id AS value, title AS text FROM #__decaroevents_events ORDER BY title" key_field="value" value_field="text" required="true" />
+  <field name="session_id" type="sql" label="COM_DECAROEVENTS_SESSION" query="SELECT id AS value, CONCAT(title, ' — ', start_at) AS text FROM #__decaroevents_sessions ORDER BY start_at" key_field="value" value_field="text"><option value="">JNONE</option></field>
+  <field name="name" type="text" label="COM_DECAROEVENTS_FIELD_NAME" required="true" maxlength="255" />
+  <field name="email" type="email" label="JGLOBAL_EMAIL" required="true" maxlength="320" />
+  <field name="status" type="list" label="JSTATUS" default="pending"><option value="pending">COM_DECAROEVENTS_STATUS_PENDING</option><option value="confirmed">COM_DECAROEVENTS_STATUS_CONFIRMED</option><option value="waitlist">COM_DECAROEVENTS_STATUS_WAITLIST</option><option value="cancelled">COM_DECAROEVENTS_STATUS_CANCELLED</option></field>
+  <field name="checked_in_at" type="calendar" label="COM_DECAROEVENTS_FIELD_CHECKED_IN" showtime="true" filter="user_utc" />
+  <field name="notes" type="textarea" label="JFIELD_META_DESCRIPTION_LABEL" rows="5" />
+</fieldset></form>

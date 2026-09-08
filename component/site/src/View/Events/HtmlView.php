@@ -1,0 +1,2 @@
+<?php
+namespace Xdecaro\Component\Decaroevents\Site\View\Events; defined('_JEXEC') or die; use Joomla\CMS\Factory; use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView; final class HtmlView extends BaseHtmlView { public $items; public function display($tpl=null):void{$this->items=$this->get('Items');if(class_exists(\Xdecaro\Core\Asset\AssetService::class))(new \Xdecaro\Core\Asset\AssetService())->useComponents(Factory::getApplication()->getDocument()->getWebAssetManager());parent::display($tpl);} }
