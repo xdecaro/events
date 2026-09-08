@@ -34,12 +34,10 @@ jobs:
           python3 build/build.py
           diff -u /tmp/events-sums dist/SHA256SUMS.txt
           for f in dist/*.zip; do unzip -t "$f" >/dev/null; done
-      - name: Publish source tree
+      - name: Publish validated application source
         run: |
-          rm -rf .bootstrap
-          rm -f bootstrap_events.py .github/workflows/bootstrap-events.yml .github/workflows/bootstrap-final.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add .gitignore CHANGELOG.md README.md VERSION build component docs/core-integration.md package tests updates
           git commit -m "Publish Events 1.0.0 Core-first baseline"
           git push origin HEAD:main
