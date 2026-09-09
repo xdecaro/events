@@ -14,6 +14,7 @@ required = [
     'package/script.php',
     'component/admin/sql/install.mysql.utf8mb4.sql',
     'component/admin/sql/updates/mysql/1.1.0.sql',
+    'component/admin/sql/updates/mysql/1.1.1.sql',
     'component/admin/services/provider.php',
     'component/admin/src/Helper/CoreUiHelper.php',
     'component/admin/src/Model/InformationModel.php',
@@ -41,16 +42,24 @@ for p in xmls:
     except Exception as exc:
         errs.append(f'xml {p}: {exc}')
 
-if v != '1.1.0':
+if v != '1.1.1':
     errs.append('unexpected release version ' + v)
 if f'<version>{v}</version>' not in (R / 'component/decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('component version mismatch')
 if f'<version>{v}</version>' not in (R / 'package/pkg_decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('package version mismatch')
+if f'<version>{v}</version>' not in (R / 'updates/pkg_decaroevents.xml').read_text(encoding='utf-8'):
+    errs.append('update feed version mismatch')
 
 sql = (R / 'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8').upper()
 if 'DROP TABLE' in sql:
     errs.append('destructive SQL')
+
+for root in (R / 'component', R / 'package'):
+    for path in root.rglob('*.php'):
+        text = path.read_text(encoding='utf-8')
+        if re.search(r'Xdecaro\\+Core', text):
+            errs.append('legacy Core namespace in ' + str(path.relative_to(R)))
 
 runtime = {
     'CoreUiHelper': (R / 'component/admin/src/Helper/CoreUiHelper.php').read_text(encoding='utf-8'),
@@ -58,9 +67,6 @@ runtime = {
     'CoreIntegrationService': (R / 'component/admin/src/Service/CoreIntegrationService.php').read_text(encoding='utf-8'),
     'package installer': (R / 'package/script.php').read_text(encoding='utf-8'),
 }
-for label, text in runtime.items():
-    if re.search(r'Xdecaro\\+Core', text):
-        errs.append('legacy Core namespace in ' + label)
 
 for marker in ['xdecaro\\Core\\Asset\\AssetService', 'xdecaro\\Core\\Version', "'1.3.0'"]:
     if marker not in runtime['CoreUiHelper']:
