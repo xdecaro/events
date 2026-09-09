@@ -15,6 +15,7 @@ required = [
     'component/admin/sql/install.mysql.utf8mb4.sql',
     'component/admin/sql/updates/mysql/1.1.0.sql',
     'component/admin/sql/updates/mysql/1.1.1.sql',
+    'component/admin/sql/updates/mysql/1.1.2.sql',
     'component/admin/services/provider.php',
     'component/admin/src/Helper/CoreUiHelper.php',
     'component/admin/src/Model/InformationModel.php',
@@ -42,7 +43,7 @@ for p in xmls:
     except Exception as exc:
         errs.append(f'xml {p}: {exc}')
 
-if v != '1.1.1':
+if v != '1.1.2':
     errs.append('unexpected release version ' + v)
 if f'<version>{v}</version>' not in (R / 'component/decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('component version mismatch')
@@ -51,9 +52,21 @@ if f'<version>{v}</version>' not in (R / 'package/pkg_decaroevents.xml').read_te
 if f'<version>{v}</version>' not in (R / 'updates/pkg_decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('update feed version mismatch')
 
-sql = (R / 'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8').upper()
-if 'DROP TABLE' in sql:
-    errs.append('destructive SQL')
+component_root = ET.parse(R / 'component/decaroevents.xml').getroot()
+install_sql = component_root.find('./install/sql/file')
+if install_sql is None or (install_sql.get('driver') or '') != 'mysql' or (install_sql.get('charset') or '') != 'utf8':
+    errs.append('Joomla install SQL manifest must use driver="mysql" charset="utf8"')
+if install_sql is not None and (install_sql.text or '').strip() != 'sql/install.mysql.utf8mb4.sql':
+    errs.append('install SQL path changed unexpectedly')
+
+sql = (R / 'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8')
+repair = (R / 'component/admin/sql/updates/mysql/1.1.2.sql').read_text(encoding='utf-8')
+for text, label in ((sql, 'install schema'), (repair, '1.1.2 repair schema')):
+    for marker in ('CREATE TABLE IF NOT EXISTS `#__decaroevents_events`', 'CREATE TABLE IF NOT EXISTS `#__decaroevents_sessions`', 'CREATE TABLE IF NOT EXISTS `#__decaroevents_registrations`', 'DEFAULT CHARSET=utf8mb4'):
+        if marker not in text:
+            errs.append(f'{label} missing {marker}')
+    if re.search(r'\b(?:DROP\s+TABLE|TRUNCATE\s+TABLE)\b', text, re.I):
+        errs.append('destructive SQL in ' + label)
 
 for root in (R / 'component', R / 'package'):
     for path in root.rglob('*.php'):
@@ -74,9 +87,11 @@ for marker in ['xdecaro\\Core\\Asset\\AssetService', 'xdecaro\\Core\\Version', "
 for marker in ['xdecaro\\Core\\Integration\\EntityReference', 'xdecaro\\Core\\Integration\\RelationReference', "MINIMUM_CORE = '1.3.0'"]:
     if marker not in runtime['CoreIntegrationService']:
         errs.append('Core integration contract missing ' + marker)
-for marker in ['pkg_xdecarocore', "MINIMUM_CORE = '1.3.0'", 'xdecaro\\Core\\Version']:
+for marker in ['final class pkg_decaroeventsInstallerScript', 'pkg_xdecarocore', "MINIMUM_CORE = '1.3.0'", 'xdecaro\\Core\\Version', 'return false;']:
     if marker not in runtime['package installer']:
         errs.append('Core installer contract missing ' + marker)
+if 'class PkgDecaroeventsInstallerScript' in runtime['package installer']:
+    errs.append('incorrect legacy package installer class name remains')
 
 site = (R / 'component/site/src/Service/RegistrationService.php').read_text(encoding='utf-8')
 for marker in ['FOR UPDATE', 'transactionStart', 'waitlist']:

@@ -4,7 +4,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
 
-final class PkgDecaroeventsInstallerScript
+/** Joomla resolves pkg_decaroevents to this exact legacy installer class name. */
+final class pkg_decaroeventsInstallerScript
 {
     private const MINIMUM_CORE = '1.3.0';
 
