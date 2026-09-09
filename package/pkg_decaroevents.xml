@@ -2,7 +2,7 @@
 <extension type="package" method="upgrade">
   <name>Events by xdecaro</name>
   <packagename>decaroevents</packagename>
-  <version>1.1.2</version>
+  <version>1.2.0</version>
   <creationDate>2026-09</creationDate>
   <author>Luca De Caro</author>
   <license>GNU General Public License version 2 or later</license>
