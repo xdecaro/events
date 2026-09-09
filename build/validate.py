@@ -16,6 +16,7 @@ required = [
     'component/admin/sql/updates/mysql/1.1.0.sql',
     'component/admin/sql/updates/mysql/1.1.1.sql',
     'component/admin/sql/updates/mysql/1.1.2.sql',
+    'component/admin/sql/updates/mysql/1.2.0.sql',
     'component/admin/services/provider.php',
     'component/admin/src/Helper/CoreUiHelper.php',
     'component/admin/src/Model/InformationModel.php',
@@ -43,7 +44,7 @@ for p in xmls:
     except Exception as exc:
         errs.append(f'xml {p}: {exc}')
 
-if v != '1.1.2':
+if v != '1.2.0':
     errs.append('unexpected release version ' + v)
 if f'<version>{v}</version>' not in (R / 'component/decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('component version mismatch')
@@ -59,6 +60,18 @@ if install_sql is None or (install_sql.get('driver') or '') != 'mysql' or (insta
 if install_sql is not None and (install_sql.text or '').strip() != 'sql/install.mysql.utf8mb4.sql':
     errs.append('install SQL path changed unexpectedly')
 
+form_root = ET.parse(R / 'component/admin/forms/event.xml').getroot()
+description = form_root.find('.//field[@name="description"]')
+if description is None:
+    errs.append('event description field missing')
+else:
+    if (description.get('type') or '').lower() != 'editor':
+        errs.append('event description must use Joomla editor form field')
+    if (description.get('editor') or '') != 'decaroeditor|none':
+        errs.append('event description editor fallback contract changed')
+    if (description.get('filter') or '') != 'raw':
+        errs.append('event description filter changed unexpectedly')
+
 sql = (R / 'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8')
 repair = (R / 'component/admin/sql/updates/mysql/1.1.2.sql').read_text(encoding='utf-8')
 for text, label in ((sql, 'install schema'), (repair, '1.1.2 repair schema')):
@@ -73,6 +86,8 @@ for root in (R / 'component', R / 'package'):
         text = path.read_text(encoding='utf-8')
         if re.search(r'Xdecaro\\+Core', text):
             errs.append('legacy Core namespace in ' + str(path.relative_to(R)))
+        if re.search(r'Xdecaro\\+Component\\+Decaroeditor|#__decaroeditor', text, re.I):
+            errs.append('private Editor coupling in ' + str(path.relative_to(R)))
 
 runtime = {
     'CoreUiHelper': (R / 'component/admin/src/Helper/CoreUiHelper.php').read_text(encoding='utf-8'),
