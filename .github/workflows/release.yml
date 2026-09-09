@@ -56,7 +56,7 @@ jobs:
             "dist/pkg_decaroevents_${VERSION}.zip" \
             dist/SHA256SUMS.txt \
             --title "Events by xdecaro ${VERSION}" \
-            --notes "Events ${VERSION}: fixes the mandatory Core 1.3.0+ installer preflight and Joomla SQL manifest compatibility, with a non-destructive repair for affected prior installs. Event/session/registration behavior and stable Joomla identities are unchanged."
+            --notes "Events ${VERSION}: optional Editor by xdecaro support for event descriptions through Joomla's native editor field, preferring decaroeditor with the built-in none editor as fallback. Core remains mandatory; event/session/registration, capacity, waitlist and check-in behavior are unchanged."
       - name: Publish feed checksum
         run: |
           git config user.name "github-actions[bot]"
