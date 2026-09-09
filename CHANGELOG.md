@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.2 - 2026-09-09
+
+- Corretto il nome della classe installer del package in `pkg_decaroeventsInstallerScript`, così Joomla esegue realmente il preflight Core obbligatorio.
+- Corretto il manifest SQL Joomla usando `charset="utf8"` senza cambiare le tabelle `utf8mb4`.
+- Aggiunto `1.1.2.sql` come repair non distruttivo con `CREATE TABLE IF NOT EXISTS` per le sole tabelle Events.
+- Aggiunti test runtime reali su Joomla 5.4.8 e 6.1.3 per installazione pulita, repair da 1.1.1 e rifiuto atomico quando Core è assente.
+- Nessuna modifica alla logica di eventi, sessioni, capienza, registrazioni, waitlist o check-in.
+
 ## 1.1.1 - 2026-09-09
 
 - Corretti i due riferimenti frontend residui al namespace Core deprecato `Xdecaro\Core`; il frontend usa ora il namespace canonico `xdecaro\Core`.
