@@ -1,0 +1,1 @@
+-- Events 1.2.0 optional Editor integration release. No schema changes are required.

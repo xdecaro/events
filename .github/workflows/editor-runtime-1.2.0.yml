@@ -1,0 +1,119 @@
+name: Events 1.2.0 Editor runtime
+on:
+  pull_request:
+    paths:
+      - 'VERSION'
+      - 'component/admin/forms/event.xml'
+      - 'component/decaroevents.xml'
+      - 'package/pkg_decaroevents.xml'
+      - '.github/workflows/editor-runtime-1.2.0.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  fallback:
+    name: Joomla ${{ matrix.joomla }} / no Editor
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        joomla: ['5.4.8','6.1.3']
+    services:
+      mysql:
+        image: mysql:8.0
+        env: {MYSQL_ALLOW_EMPTY_PASSWORD: 'yes', MYSQL_DATABASE: joomla}
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', extensions: 'mysqli,zip,simplexml', coverage: none}
+      - run: python3 build/build.py
+      - name: Install Joomla Core and Events
+        shell: bash
+        run: |
+          set -euo pipefail
+          JOOMLA='${{ matrix.joomla }}'
+          case "$JOOMLA" in
+            5.4.8) JSHA='8d3585939bca8e6b1d5f3e97dda2cc557c61e610daf488c871e1f62a97be9bd0' ;;
+            6.1.3) JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1' ;;
+            *) exit 1 ;;
+          esac
+          JFILE="Joomla_${JOOMLA}-Stable-Full_Package.zip"
+          curl -fL --retry 3 "https://github.com/joomla/joomla-cms/releases/download/${JOOMLA}/${JFILE}" -o /tmp/j.zip
+          echo "${JSHA}  /tmp/j.zip" | sha256sum --check --strict
+          curl -fL --retry 3 'https://github.com/xdecaro/core/releases/download/v1.4.0/pkg_xdecarocore_1.4.0.zip' -o /tmp/core.zip
+          echo '4248f7e3de514c2ae2402ffc8ba12845647dca1ebac963da370650e88ac45def  /tmp/core.zip' | sha256sum --check --strict
+          mkdir joomla && unzip -q /tmp/j.zip -d joomla
+          cd joomla
+          php installation/joomla.php install --site-name='Events Editor Runtime' --admin-user='Admin' --admin-username=admin --admin-password="Events-${GITHUB_RUN_ID}!" --admin-email=admin@example.invalid --db-type=mysqli --db-host=127.0.0.1 --db-user=root --db-pass='' --db-name=joomla --db-prefix=evt_ --db-encryption=0 --no-interaction
+          php cli/joomla.php extension:install --path=/tmp/core.zip
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_decaroevents_1.2.0.zip"
+          grep -Fq 'type="editor" editor="decaroeditor|none"' administrator/components/com_decaroevents/forms/event.xml
+      - name: Prove native fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla -e "SELECT COUNT(*) FROM evt_extensions WHERE type='plugin' AND folder='editors' AND element='decaroeditor' AND enabled=1;")" = 0
+          test "$(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla -e "SELECT element FROM evt_extensions WHERE type='plugin' AND folder='editors' AND enabled=1 AND element IN ('decaroeditor','none') ORDER BY FIELD(element,'decaroeditor','none') LIMIT 1;")" = none
+
+  preferred-editor:
+    name: Joomla 6.1.3 / Editor alpha6
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env: {MYSQL_ALLOW_EMPTY_PASSWORD: 'yes', MYSQL_DATABASE: joomla}
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: {php-version: '8.3', extensions: 'mysqli,zip,simplexml', coverage: none}
+      - run: python3 build/build.py
+      - name: Install Joomla Core Events and Editor
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 'https://github.com/joomla/joomla-cms/releases/download/6.1.3/Joomla_6.1.3-Stable-Full_Package.zip' -o /tmp/j.zip
+          echo 'a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1  /tmp/j.zip' | sha256sum --check --strict
+          curl -fL --retry 3 'https://github.com/xdecaro/core/releases/download/v1.4.0/pkg_xdecarocore_1.4.0.zip' -o /tmp/core.zip
+          echo '4248f7e3de514c2ae2402ffc8ba12845647dca1ebac963da370650e88ac45def  /tmp/core.zip' | sha256sum --check --strict
+          curl -fL --retry 8 'https://github.com/xdecaro/editor/releases/download/v0.1.0-alpha6/pkg_decaroeditor_0.1.0-alpha6.zip' -o /tmp/editor.zip
+          echo '6ece2b5330321e0e2dbc2ac7c388d0cc2e24d977cd415dccc9cc0a922dece616  /tmp/editor.zip' | sha256sum --check --strict
+          mkdir joomla && unzip -q /tmp/j.zip -d joomla
+          cd joomla
+          php installation/joomla.php install --site-name='Events Editor Runtime' --admin-user='Admin' --admin-username=admin --admin-password="Events-${GITHUB_RUN_ID}!" --admin-email=admin@example.invalid --db-type=mysqli --db-host=127.0.0.1 --db-user=root --db-pass='' --db-name=joomla --db-prefix=evt_ --db-encryption=0 --no-interaction
+          php cli/joomla.php extension:install --path=/tmp/core.zip
+          php cli/joomla.php extension:install --path="$GITHUB_WORKSPACE/dist/pkg_decaroevents_1.2.0.zip"
+          php cli/joomla.php extension:install --path=/tmp/editor.zip
+          mysql --protocol=TCP -h127.0.0.1 -uroot joomla -e "UPDATE evt_extensions SET enabled=1 WHERE type='plugin' AND folder='editors' AND element='decaroeditor';"
+          test "$(mysql --protocol=TCP -h127.0.0.1 -uroot --batch --skip-column-names joomla -e "SELECT element FROM evt_extensions WHERE type='plugin' AND folder='editors' AND enabled=1 AND element IN ('decaroeditor','none') ORDER BY FIELD(element,'decaroeditor','none') LIMIT 1;")" = decaroeditor
+      - name: Prove provider registration
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd joomla
+          cat > /tmp/provider.php <<'PHP'
+          <?php
+          define('_JEXEC', 1);
+          define('JPATH_BASE', getcwd());
+          require JPATH_BASE . '/includes/defines.php';
+          require JPATH_BASE . '/includes/framework.php';
+          $container = \Joomla\CMS\Factory::getContainer();
+          $container->alias('session', 'session.cli')
+              ->alias('JSession', 'session.cli')
+              ->alias(\Joomla\CMS\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\Session::class, 'session.cli')
+              ->alias(\Joomla\Session\SessionInterface::class, 'session.cli');
+          $app = $container->get(\Joomla\Console\Application::class);
+          \Joomla\CMS\Factory::$application = $app;
+          $app->createExtensionNamespaceMap();
+          $registry = $container->get(\Joomla\CMS\Editor\EditorsRegistry::class);
+          if (!$registry->has('decaroeditor')) { exit(1); }
+          $provider = $registry->get('decaroeditor');
+          if (!$provider instanceof \Joomla\CMS\Editor\EditorProviderInterface || $provider->getName() !== 'decaroeditor') { exit(1); }
+          echo "Events Editor runtime OK\n";
+          PHP
+          php /tmp/provider.php

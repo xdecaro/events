@@ -5,7 +5,7 @@
     <field name="title" type="text" label="JGLOBAL_TITLE" required="true" maxlength="255" />
     <field name="alias" type="text" label="JFIELD_ALIAS_LABEL" maxlength="255" />
     <field name="event_type" type="text" label="COM_DECAROEVENTS_FIELD_TYPE" maxlength="100" />
-    <field name="description" type="textarea" label="JGLOBAL_DESCRIPTION" rows="8" filter="raw" />
+    <field name="description" type="editor" editor="decaroeditor|none" label="JGLOBAL_DESCRIPTION" height="420" filter="raw" />
     <field name="location" type="text" label="COM_DECAROEVENTS_FIELD_LOCATION" maxlength="255" />
     <field name="start_at" type="calendar" label="COM_DECAROEVENTS_FIELD_START" required="true" showtime="true" filter="user_utc" />
     <field name="end_at" type="calendar" label="COM_DECAROEVENTS_FIELD_END" showtime="true" filter="user_utc" />

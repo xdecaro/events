@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 - 2026-09-09
+
+- Aggiunto supporto opzionale a Editor by xdecaro per la descrizione dell'evento tramite il campo `editor` nativo di Joomla con preferenza `decaroeditor` e fallback `none`.
+- Conservato il filtro `raw` già esistente per non modificare la semantica dei contenuti HTML salvati.
+- Editor resta opzionale: nessun import di classi private Editor, nessun accesso a storage privato e nessuna dipendenza aggiunta a Core.
+- Nessuna modifica allo schema dati o alla logica di eventi, sessioni, capienza, registrazioni, waitlist e check-in.
+- Conservati supporto Joomla 5/6, `com_decaroevents`, `pkg_decaroevents` e il namespace storico `Xdecaro\Component\Decaroevents`.
+
 ## 1.1.2 - 2026-09-09
 
 - Corretto il nome della classe installer del package in `pkg_decaroeventsInstallerScript`, così Joomla esegue realmente il preflight Core obbligatorio.
