@@ -25,6 +25,10 @@ views = [item.get('view') for item in submenu.findall('menu')] if submenu is not
 if not views or views[0] != 'dashboard':
     errors.append('dashboard must be the first administrator submenu view')
 
+controller = (R / 'component/admin/src/Controller/DisplayController.php').read_text(encoding='utf-8')
+if "default_view = 'dashboard'" not in controller and "default_view='dashboard'" not in controller:
+    errors.append('administrator default view must be dashboard')
+
 version = (R / 'VERSION').read_text(encoding='utf-8').strip()
 readme = (R / 'README.md').read_text(encoding='utf-8')
 if f'- Versione: `{version}`' not in readme:
