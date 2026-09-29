@@ -55,6 +55,10 @@ $listDirn = $this->escape((string) $this->state->get('list.direction', 'DESC'));
         <?php foreach ($this->items as $item) : ?>
           <section class="xdecaro-card">
             <div class="xdecaro-card__body">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="cid[]" id="mobile-cb<?= (int) $item->id ?>" value="<?= (int) $item->id ?>" onclick="Joomla.isChecked(this.checked);">
+                <label class="form-check-label small" for="mobile-cb<?= (int) $item->id ?>"><?= Text::_('JSELECT') ?></label>
+              </div>
               <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                 <a class="fw-semibold" href="<?= Route::_('index.php?option=com_decaroevents&task=registration.edit&id=' . (int) $item->id) ?>"><?= $e($item->name) ?></a>
                 <span class="xdecaro-badge <?= $statusClass((string) $item->status) ?>"><?= Text::_('COM_DECAROEVENTS_STATUS_' . strtoupper((string) $item->status)) ?></span>

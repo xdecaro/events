@@ -19,7 +19,7 @@
     </field>
   </fields>
   <fields name="list">
-    <field name="fullordering" type="list" label="JGLOBAL_SORT_BY" default="r.created DESC">
+    <field name="fullordering" type="list" label="JGLOBAL_SORT_BY" class="js-select-submit-on-change" default="r.created DESC">
       <option value="r.created DESC">COM_DECAROEVENTS_SORT_CREATED_DESC</option>
       <option value="r.created ASC">COM_DECAROEVENTS_SORT_CREATED_ASC</option>
       <option value="r.name ASC">COM_DECAROEVENTS_SORT_NAME_ASC</option>
@@ -27,6 +27,6 @@
       <option value="e.title ASC">COM_DECAROEVENTS_SORT_EVENT_ASC</option>
       <option value="e.title DESC">COM_DECAROEVENTS_SORT_EVENT_DESC</option>
     </field>
-    <field name="limit" type="limitbox" class="input-mini" default="25" />
+    <field name="limit" type="limitbox" class="input-mini js-select-submit-on-change" default="25" />
   </fields>
 </form>
