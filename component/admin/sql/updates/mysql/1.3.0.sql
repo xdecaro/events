@@ -1,0 +1,1 @@
+-- Events 1.3.0: administrator dashboard and list UI only; no schema changes.

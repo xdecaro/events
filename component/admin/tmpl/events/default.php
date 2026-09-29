@@ -1,2 +1,70 @@
-<?php defined('_JEXEC') or die; use Joomla\CMS\HTML\HTMLHelper; use Joomla\CMS\Language\Text; use Joomla\CMS\Router\Route; $app=Joomla\CMS\Factory::getApplication();$s=$app->input->getString('filter_search','');$e=static fn($v)=>htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');?>
-<form action="<?= Route::_('index.php?option=com_decaroevents&view=events') ?>" method="post" id="adminForm" name="adminForm"><div class="xdecaro-scope"><div class="xdecaro-toolbar mb-3"><input class="xdecaro-input" style="max-width:28rem" name="filter_search" value="<?= $e($s) ?>" placeholder="<?= Text::_('JSEARCH_FILTER') ?>"><button class="xdecaro-button xdecaro-button--primary" type="submit"><?= Text::_('JSEARCH_FILTER_SUBMIT') ?></button><a class="xdecaro-button" href="<?= Route::_('index.php?option=com_decaroevents&view=events') ?>"><?= Text::_('JSEARCH_FILTER_CLEAR') ?></a></div><div class="xdecaro-table-wrap"><table class="xdecaro-table"><thead><tr><th><?= HTMLHelper::_('grid.checkall') ?></th><th><?= Text::_('JGLOBAL_TITLE') ?></th><th><?= Text::_('COM_DECAROEVENTS_FIELD_START') ?></th><th><?= Text::_('COM_DECAROEVENTS_FIELD_LOCATION') ?></th><th><?= Text::_('COM_DECAROEVENTS_FIELD_CAPACITY') ?></th><th><?= Text::_('JSTATUS') ?></th></tr></thead><tbody><?php foreach($this->items as $i=>$item):?><tr><td><?= HTMLHelper::_('grid.id',$i,(int)$item->id) ?></td><td><a href="<?= Route::_('index.php?option=com_decaroevents&task=event.edit&id='.(int)$item->id) ?>"><?= $e($item->title) ?></a></td><td><?= $e($item->start_at) ?></td><td><?= $e($item->location) ?></td><td><?= (int)$item->capacity ?: '∞' ?></td><td><span class="xdecaro-badge <?= (int)$item->published===1?'xdecaro-badge--success':'' ?>"><?= Text::_((int)$item->published===1?'JPUBLISHED':'JUNPUBLISHED') ?></span></td></tr><?php endforeach;?></tbody></table></div><?= $this->pagination->getListFooter() ?></div><input type="hidden" name="task" value=""><input type="hidden" name="boxchecked" value="0"><?= HTMLHelper::_('form.token') ?></form>
+<?php
+defined('_JEXEC') or die;
+
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+
+$e = static fn($value) => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+$date = static fn($value) => $value ? HTMLHelper::_('date', $value, Text::_('DATE_FORMAT_LC5')) : '—';
+$listOrder = $this->escape((string) $this->state->get('list.ordering', 'e.start_at'));
+$listDirn = $this->escape((string) $this->state->get('list.direction', 'ASC'));
+?>
+<form action="<?= Route::_('index.php?option=com_decaroevents&view=events') ?>" method="post" id="adminForm" name="adminForm">
+  <div class="xdecaro-scope">
+    <?= LayoutHelper::render('joomla.searchtools.default', ['view' => $this]) ?>
+
+    <?php if (empty($this->items)) : ?>
+      <div class="alert alert-info"><?= Text::_('JGLOBAL_NO_MATCHING_RESULTS') ?></div>
+    <?php else : ?>
+      <div class="d-none d-md-block">
+        <div class="xdecaro-table-wrap">
+          <table class="xdecaro-table">
+            <thead><tr>
+              <th><?= HTMLHelper::_('grid.checkall') ?></th>
+              <th><?= HTMLHelper::_('searchtools.sort', 'JGLOBAL_TITLE', 'e.title', $listDirn, $listOrder) ?></th>
+              <th><?= HTMLHelper::_('searchtools.sort', 'COM_DECAROEVENTS_FIELD_START', 'e.start_at', $listDirn, $listOrder) ?></th>
+              <th><?= HTMLHelper::_('searchtools.sort', 'COM_DECAROEVENTS_FIELD_LOCATION', 'e.location', $listDirn, $listOrder) ?></th>
+              <th><?= HTMLHelper::_('searchtools.sort', 'COM_DECAROEVENTS_FIELD_CAPACITY', 'e.capacity', $listDirn, $listOrder) ?></th>
+              <th><?= HTMLHelper::_('searchtools.sort', 'JSTATUS', 'e.published', $listDirn, $listOrder) ?></th>
+            </tr></thead>
+            <tbody>
+            <?php foreach ($this->items as $i => $item) : ?>
+              <tr>
+                <td><?= HTMLHelper::_('grid.id', $i, (int) $item->id) ?></td>
+                <td><a href="<?= Route::_('index.php?option=com_decaroevents&task=event.edit&id=' . (int) $item->id) ?>"><?= $e($item->title) ?></a></td>
+                <td><?= $date($item->start_at) ?></td>
+                <td><?= $e($item->location ?: '—') ?></td>
+                <td><?= (int) $item->capacity > 0 ? (int) $item->capacity : Text::_('COM_DECAROEVENTS_UNLIMITED') ?></td>
+                <td><span class="xdecaro-badge <?= (int) $item->published === 1 ? 'xdecaro-badge--success' : '' ?>"><?= Text::_((int) $item->published === 1 ? 'JPUBLISHED' : 'JUNPUBLISHED') ?></span></td>
+              </tr>
+            <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="d-md-none d-grid gap-3">
+        <?php foreach ($this->items as $item) : ?>
+          <section class="xdecaro-card">
+            <div class="xdecaro-card__body">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <a class="fw-semibold" href="<?= Route::_('index.php?option=com_decaroevents&task=event.edit&id=' . (int) $item->id) ?>"><?= $e($item->title) ?></a>
+                <span class="xdecaro-badge <?= (int) $item->published === 1 ? 'xdecaro-badge--success' : '' ?>"><?= Text::_((int) $item->published === 1 ? 'JPUBLISHED' : 'JUNPUBLISHED') ?></span>
+              </div>
+              <div class="small text-muted mb-1"><?= $date($item->start_at) ?></div>
+              <div><?= $e($item->location ?: '—') ?></div>
+              <div class="small mt-2"><?= Text::_('COM_DECAROEVENTS_FIELD_CAPACITY') ?>: <?= (int) $item->capacity > 0 ? (int) $item->capacity : Text::_('COM_DECAROEVENTS_UNLIMITED') ?></div>
+            </div>
+          </section>
+        <?php endforeach; ?>
+      </div>
+
+      <?= $this->pagination->getListFooter() ?>
+    <?php endif; ?>
+  </div>
+  <input type="hidden" name="task" value="">
+  <input type="hidden" name="boxchecked" value="0">
+  <?= HTMLHelper::_('form.token') ?>
+</form>

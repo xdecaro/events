@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.0 - 2026-09-29
+
+- Aggiunta Dashboard amministrativa con riepilogo di eventi, prossimi eventi, sessioni, registrazioni, attese e check-in.
+- Uniformate le liste Eventi, Sessioni e Registrazioni con SearchTools Joomla, filtri server-side, ordinamento e paginazione.
+- Aggiunte viste mobile a card, mantenendo le tabelle complete su tablet/desktop e gli asset UI condivisi di Core.
+- Sincronizzate versione, README, Informazioni, manifest, update feed e note di release.
+- Reso il test runtime Editor indipendente dal numero di versione del pacchetto.
+- Nessuna modifica allo schema dati o alla logica di capienza, waitlist, check-in e frontend.
+
 ## 1.2.0 - 2026-09-09
 
 - Aggiunto supporto opzionale a Editor by xdecaro per la descrizione dell'evento tramite il campo `editor` nativo di Joomla con preferenza `decaroeditor` e fallback `none`.

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fields name="filter">
+    <field name="search" type="text" inputmode="search" label="JSEARCH_FILTER_LABEL" hint="COM_DECAROEVENTS_FILTER_EVENTS_SEARCH" />
+    <field name="published" type="list" label="JSTATUS" class="js-select-submit-on-change">
+      <option value="">JOPTION_SELECT_PUBLISHED</option>
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+    </field>
+  </fields>
+  <fields name="list">
+    <field name="fullordering" type="list" label="JGLOBAL_SORT_BY" default="e.start_at ASC">
+      <option value="e.start_at ASC">COM_DECAROEVENTS_SORT_START_ASC</option>
+      <option value="e.start_at DESC">COM_DECAROEVENTS_SORT_START_DESC</option>
+      <option value="e.title ASC">JGLOBAL_TITLE_ASC</option>
+      <option value="e.title DESC">JGLOBAL_TITLE_DESC</option>
+      <option value="e.location ASC">COM_DECAROEVENTS_SORT_LOCATION_ASC</option>
+      <option value="e.location DESC">COM_DECAROEVENTS_SORT_LOCATION_DESC</option>
+    </field>
+    <field name="limit" type="limitbox" class="input-mini" default="25" />
+  </fields>
+</form>
