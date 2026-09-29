@@ -6,17 +6,13 @@ on:
       - 'component/admin/forms/event.xml'
       - 'component/decaroevents.xml'
       - 'package/pkg_decaroevents.xml'
-      - '.github/workflows/editor-runtime-1.2.0.yml'
+      - '.github/workflows/editor-runtime.yml'
   workflow_dispatch:
 permissions: {contents: read}
 jobs:
   fallback:
-    name: Joomla ${{ matrix.joomla }} / no Editor
+    name: Joomla 6.1.3 / no Editor
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        joomla: ['5.4.8','6.1.3']
     services:
       mysql:
         image: mysql:8.0
@@ -34,12 +30,8 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < "$GITHUB_WORKSPACE/VERSION")"
-          JOOMLA='${{ matrix.joomla }}'
-          case "$JOOMLA" in
-            5.4.8) JSHA='8d3585939bca8e6b1d5f3e97dda2cc557c61e610daf488c871e1f62a97be9bd0' ;;
-            6.1.3) JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1' ;;
-            *) exit 1 ;;
-          esac
+          JOOMLA='6.1.3'
+          JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1'
           JFILE="Joomla_${JOOMLA}-Stable-Full_Package.zip"
           curl -fL --retry 3 "https://github.com/joomla/joomla-cms/releases/download/${JOOMLA}/${JFILE}" -o /tmp/j.zip
           echo "${JSHA}  /tmp/j.zip" | sha256sum --check --strict

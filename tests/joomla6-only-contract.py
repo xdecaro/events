@@ -30,7 +30,7 @@ for marker in ("MINIMUM_JOOMLA = '6.1.3'", 'JVERSION', 'version_compare'):
         errors.append(f'package installer missing Joomla 6.1.3 contract: {marker}')
 
 ci = (R / '.github/workflows/ci.yml').read_text(encoding='utf-8')
-editor_ci = (R / '.github/workflows/editor-runtime-1.2.0.yml').read_text(encoding='utf-8')
+editor_ci = (R / '.github/workflows/editor-runtime.yml').read_text(encoding='utf-8')
 for label, text in (('CI', ci), ('Editor runtime', editor_ci)):
     if '5.4.8' in text or 'Joomla 5' in text:
         errors.append(f'{label} still contains Joomla 5 coverage')

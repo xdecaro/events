@@ -1,0 +1,1 @@
+-- Events 1.3.1 schema marker: Joomla 6.1.3+ support baseline; no database changes.
