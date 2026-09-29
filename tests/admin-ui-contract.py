@@ -67,12 +67,20 @@ for view, (filter_form, model_marker) in list_contracts.items():
         for marker in ("searchtools.default", "searchtools.sort", "d-none d-md-block", "d-md-none"):
             if marker not in template:
                 errors.append(f'{view} template missing responsive/filter contract: {marker}')
+        for marker in ('name="cid[]"', 'mobile-cb<?= (int) $item->id ?>', 'Joomla.isChecked(this.checked)'):
+            if marker not in template:
+                errors.append(f'{view} mobile selection contract missing: {marker}')
 
     if filter_path.is_file():
         try:
             filter_root = ET.parse(filter_path).getroot()
             if filter_root.find('.//field[@name="search"]') is None:
                 errors.append(f'{view} filter form missing search field')
+            for field_name in ('fullordering', 'limit'):
+                field = filter_root.find(f'.//field[@name="{field_name}"]')
+                classes = (field.get('class', '') if field is not None else '').split()
+                if field is None or 'js-select-submit-on-change' not in classes:
+                    errors.append(f'{view} {field_name} must auto-submit')
             filter_xml = filter_path.read_text(encoding='utf-8')
             if 'js-select-submit-on-change' not in filter_xml:
                 errors.append(f'{view} filter form missing auto-submit select contract')
