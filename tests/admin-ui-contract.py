@@ -73,6 +73,9 @@ for view, (filter_form, model_marker) in list_contracts.items():
             filter_root = ET.parse(filter_path).getroot()
             if filter_root.find('.//field[@name="search"]') is None:
                 errors.append(f'{view} filter form missing search field')
+            filter_xml = filter_path.read_text(encoding='utf-8')
+            if 'js-select-submit-on-change' not in filter_xml:
+                errors.append(f'{view} filter form missing auto-submit select contract')
         except Exception as exc:
             errors.append(f'{view} filter XML invalid: {exc}')
 
