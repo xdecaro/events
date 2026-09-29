@@ -1,4 +1,35 @@
 <?php
-namespace Xdecaro\Component\Decaroevents\Administrator\View\Events; defined('_JEXEC') or die;
-use Joomla\CMS\Language\Text; use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView; use Joomla\CMS\Toolbar\ToolbarHelper; use Xdecaro\Component\Decaroevents\Administrator\Helper\CoreUiHelper;
-final class HtmlView extends BaseHtmlView { public $items; public $pagination; public function display($tpl=null):void{CoreUiHelper::useComponents();$this->items=$this->get('Items');$this->pagination=$this->get('Pagination');ToolbarHelper::title(Text::_('COM_DECAROEVENTS_EVENTS'),'calendar');ToolbarHelper::addNew('event.add');ToolbarHelper::publish('events.publish','JTOOLBAR_PUBLISH',true);ToolbarHelper::unpublish('events.unpublish','JTOOLBAR_UNPUBLISH',true);ToolbarHelper::deleteList('', 'events.delete');parent::display($tpl);} }
+namespace Xdecaro\Component\Decaroevents\Administrator\View\Events;
+
+defined('_JEXEC') or die;
+
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Toolbar\ToolbarHelper;
+use Xdecaro\Component\Decaroevents\Administrator\Helper\CoreUiHelper;
+
+final class HtmlView extends BaseHtmlView
+{
+    public $items;
+    public $pagination;
+    public $state;
+    public $filterForm;
+    public $activeFilters;
+
+    public function display($tpl = null): void
+    {
+        CoreUiHelper::useComponents();
+        $this->items = $this->get('Items');
+        $this->pagination = $this->get('Pagination');
+        $this->state = $this->get('State');
+        $this->filterForm = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
+
+        ToolbarHelper::title(Text::_('COM_DECAROEVENTS_EVENTS'), 'calendar');
+        ToolbarHelper::addNew('event.add');
+        ToolbarHelper::publish('events.publish', 'JTOOLBAR_PUBLISH', true);
+        ToolbarHelper::unpublish('events.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+        ToolbarHelper::deleteList('', 'events.delete');
+        parent::display($tpl);
+    }
+}

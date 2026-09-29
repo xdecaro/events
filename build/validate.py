@@ -17,6 +17,7 @@ required = [
     'component/admin/sql/updates/mysql/1.1.1.sql',
     'component/admin/sql/updates/mysql/1.1.2.sql',
     'component/admin/sql/updates/mysql/1.2.0.sql',
+    'component/admin/sql/updates/mysql/1.3.0.sql',
     'component/admin/services/provider.php',
     'component/admin/src/Helper/CoreUiHelper.php',
     'component/admin/src/Model/InformationModel.php',
@@ -36,6 +37,9 @@ xmls = [
     'component/admin/forms/event.xml',
     'component/admin/forms/session.xml',
     'component/admin/forms/registration.xml',
+    'component/admin/forms/filter_events.xml',
+    'component/admin/forms/filter_sessions.xml',
+    'component/admin/forms/filter_registrations.xml',
     'updates/pkg_decaroevents.xml',
 ]
 for p in xmls:
@@ -44,7 +48,7 @@ for p in xmls:
     except Exception as exc:
         errs.append(f'xml {p}: {exc}')
 
-if v != '1.2.0':
+if v != '1.3.0':
     errs.append('unexpected release version ' + v)
 if f'<version>{v}</version>' not in (R / 'component/decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('component version mismatch')

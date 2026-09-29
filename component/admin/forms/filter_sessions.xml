@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fields name="filter">
+    <field name="search" type="text" inputmode="search" label="JSEARCH_FILTER_LABEL" hint="COM_DECAROEVENTS_FILTER_SESSIONS_SEARCH" />
+    <field name="event_id" type="sql" label="COM_DECAROEVENTS_EVENT" class="js-select-submit-on-change" query="SELECT id AS value, title AS text FROM #__decaroevents_events ORDER BY title" key_field="value" value_field="text">
+      <option value="">COM_DECAROEVENTS_FILTER_ALL_EVENTS</option>
+    </field>
+    <field name="published" type="list" label="JSTATUS" class="js-select-submit-on-change">
+      <option value="">JOPTION_SELECT_PUBLISHED</option>
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+    </field>
+  </fields>
+  <fields name="list">
+    <field name="fullordering" type="list" label="JGLOBAL_SORT_BY" class="js-select-submit-on-change" default="s.start_at ASC">
+      <option value="s.start_at ASC">COM_DECAROEVENTS_SORT_START_ASC</option>
+      <option value="s.start_at DESC">COM_DECAROEVENTS_SORT_START_DESC</option>
+      <option value="e.title ASC">COM_DECAROEVENTS_SORT_EVENT_ASC</option>
+      <option value="e.title DESC">COM_DECAROEVENTS_SORT_EVENT_DESC</option>
+      <option value="s.title ASC">JGLOBAL_TITLE_ASC</option>
+      <option value="s.title DESC">JGLOBAL_TITLE_DESC</option>
+    </field>
+    <field name="limit" type="limitbox" class="input-mini js-select-submit-on-change" default="25" />
+  </fields>
+</form>

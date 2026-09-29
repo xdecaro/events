@@ -6,7 +6,7 @@
   <copyright>Copyright (C) 2026 Luca De Caro. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
   <authorUrl>https://github.com/xdecaro/events</authorUrl>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
   <description>COM_DECAROEVENTS_XML_DESCRIPTION</description>
   <targetplatform name="joomla" version="(5|6).*" />
   <php_minimum>8.1.0</php_minimum>
@@ -17,6 +17,7 @@
   <administration>
     <menu img="class:calendar">COM_DECAROEVENTS</menu>
     <submenu>
+      <menu view="dashboard">COM_DECAROEVENTS_DASHBOARD</menu>
       <menu view="events">COM_DECAROEVENTS_EVENTS</menu>
       <menu view="sessions">COM_DECAROEVENTS_SESSIONS</menu>
       <menu view="registrations">COM_DECAROEVENTS_REGISTRATIONS</menu>

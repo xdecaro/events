@@ -34,6 +34,7 @@ jobs:
         run: |
           find component package tests -name '*.php' -print0 | xargs -0 -n1 php -l
           python3 build/validate.py
+          python3 tests/admin-ui-contract.py
           php tests/core-integration-smoke.php
       - name: Build
         run: python3 build/build.py
@@ -56,7 +57,7 @@ jobs:
             "dist/pkg_decaroevents_${VERSION}.zip" \
             dist/SHA256SUMS.txt \
             --title "Events by xdecaro ${VERSION}" \
-            --notes "Events ${VERSION}: optional Editor by xdecaro support for event descriptions through Joomla's native editor field, preferring decaroeditor with the built-in none editor as fallback. Core remains mandatory; event/session/registration, capacity, waitlist and check-in behavior are unchanged."
+            --notes "Events ${VERSION}: adds the administrator Dashboard and unifies Events, Sessions and Registrations with Joomla SearchTools, server-side filters, sortable lists and responsive mobile cards. Core remains mandatory; event/session/registration data model, capacity, waitlist, check-in and frontend behavior are unchanged."
       - name: Publish feed checksum
         run: |
           git config user.name "github-actions[bot]"
