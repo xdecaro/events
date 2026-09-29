@@ -23,7 +23,7 @@ final class InformationModel extends BaseDatabaseModel
         $coreVersion = class_exists(\xdecaro\Core\Version::class) ? (string) \xdecaro\Core\Version::VERSION : '';
 
         return [
-            'version' => '1.3.0',
+            'version' => '1.3.1',
             'core' => [
                 'version' => $coreVersion,
                 'compatible' => $coreVersion !== '' && version_compare($coreVersion, '1.3.0', '>='),

@@ -18,6 +18,7 @@ required = [
     'component/admin/sql/updates/mysql/1.1.2.sql',
     'component/admin/sql/updates/mysql/1.2.0.sql',
     'component/admin/sql/updates/mysql/1.3.0.sql',
+    'component/admin/sql/updates/mysql/1.3.1.sql',
     'component/admin/services/provider.php',
     'component/admin/src/Helper/CoreUiHelper.php',
     'component/admin/src/Model/InformationModel.php',
@@ -48,7 +49,7 @@ for p in xmls:
     except Exception as exc:
         errs.append(f'xml {p}: {exc}')
 
-if v != '1.3.0':
+if v != '1.3.1':
     errs.append('unexpected release version ' + v)
 if f'<version>{v}</version>' not in (R / 'component/decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('component version mismatch')
@@ -56,6 +57,21 @@ if f'<version>{v}</version>' not in (R / 'package/pkg_decaroevents.xml').read_te
     errs.append('package version mismatch')
 if f'<version>{v}</version>' not in (R / 'updates/pkg_decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('update feed version mismatch')
+
+for label, path in (
+    ('component', 'component/decaroevents.xml'),
+    ('package', 'package/pkg_decaroevents.xml'),
+    ('update feed', 'updates/pkg_decaroevents.xml'),
+):
+    root = ET.parse(R / path).getroot()
+    if label == 'update feed':
+        root = root.find('update')
+    target = root.find('targetplatform') if root is not None else None
+    if target is None or (target.get('name') or '') != 'joomla' or (target.get('version') or '') != '6.*':
+        errs.append(f'{label} must target Joomla 6 only')
+    php_min = root.find('php_minimum') if root is not None else None
+    if php_min is None or (php_min.text or '').strip() != '8.3.0':
+        errs.append(f'{label} must require PHP 8.3.0+')
 
 component_root = ET.parse(R / 'component/decaroevents.xml').getroot()
 install_sql = component_root.find('./install/sql/file')
@@ -106,9 +122,9 @@ for marker in ['xdecaro\\Core\\Asset\\AssetService', 'xdecaro\\Core\\Version', "
 for marker in ['xdecaro\\Core\\Integration\\EntityReference', 'xdecaro\\Core\\Integration\\RelationReference', "MINIMUM_CORE = '1.3.0'"]:
     if marker not in runtime['CoreIntegrationService']:
         errs.append('Core integration contract missing ' + marker)
-for marker in ['final class pkg_decaroeventsInstallerScript', 'pkg_xdecarocore', "MINIMUM_CORE = '1.3.0'", 'xdecaro\\Core\\Version', 'return false;']:
+for marker in ['final class pkg_decaroeventsInstallerScript', 'pkg_xdecarocore', "MINIMUM_CORE = '1.3.0'", "MINIMUM_JOOMLA = '6.1.3'", 'JVERSION', 'xdecaro\\Core\\Version', 'return false;']:
     if marker not in runtime['package installer']:
-        errs.append('Core installer contract missing ' + marker)
+        errs.append('installer contract missing ' + marker)
 if 'class PkgDecaroeventsInstallerScript' in runtime['package installer']:
     errs.append('incorrect legacy package installer class name remains')
 

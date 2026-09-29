@@ -7,12 +7,22 @@ use Joomla\Database\DatabaseInterface;
 /** Joomla resolves pkg_decaroevents to this exact legacy installer class name. */
 final class pkg_decaroeventsInstallerScript
 {
+    private const MINIMUM_JOOMLA = '6.1.3';
     private const MINIMUM_CORE = '1.3.0';
 
     public function preflight($type, $parent): bool
     {
         if ($type === 'uninstall') {
             return true;
+        }
+
+        if (!defined('JVERSION') || version_compare((string) JVERSION, self::MINIMUM_JOOMLA, '<')) {
+            Factory::getApplication()->enqueueMessage(
+                'Events by xdecaro requires Joomla 6.1.3 or later in the Joomla 6 series.',
+                'error'
+            );
+
+            return false;
         }
 
         $version = $this->coreVersion();

@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.1','8.3']
+        php: ['8.3','8.4']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +22,8 @@ jobs:
         run: python3 build/validate.py
       - name: Admin UI contract
         run: python3 tests/admin-ui-contract.py
+      - name: Joomla 6-only contract
+        run: python3 tests/joomla6-only-contract.py
       - name: Smoke
         run: php tests/core-integration-smoke.php
       - name: Deterministic build A
@@ -32,13 +34,12 @@ jobs:
         run: python3 build/build.py && diff -u /tmp/sums dist/SHA256SUMS.txt
 
   joomla-runtime:
-    name: Joomla ${{ matrix.joomla }} / ${{ matrix.mode }}
+    name: Joomla 6.1.3 / ${{ matrix.mode }}
     runs-on: ubuntu-latest
     needs: validate
     strategy:
       fail-fast: false
       matrix:
-        joomla: ['5.4.8', '6.1.3']
         mode: ['clean', 'repair-1.1.1', 'missing-core']
     services:
       mysql:
@@ -66,12 +67,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JOOMLA='${{ matrix.joomla }}'
-          case "$JOOMLA" in
-            5.4.8) JSHA='8d3585939bca8e6b1d5f3e97dda2cc557c61e610daf488c871e1f62a97be9bd0' ;;
-            6.1.3) JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1' ;;
-            *) exit 1 ;;
-          esac
+          JOOMLA='6.1.3'
+          JSHA='a49305652503f9344d046d55471f324a07882996132ed967c3b0fe34707ae4a1'
           JFILE="Joomla_${JOOMLA}-Stable-Full_Package.zip"
           curl -fL --retry 3 "https://github.com/joomla/joomla-cms/releases/download/${JOOMLA}/${JFILE}" -o /tmp/joomla.zip
           echo "${JSHA}  /tmp/joomla.zip" | sha256sum --check --strict

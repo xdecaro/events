@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.1 - 2026-09-29
+
+- Allineato Events alla piattaforma xdecaro corrente: supporto esclusivo Joomla 6.1.3+.
+- Alzato il requisito PHP a 8.3+, coerente con i requisiti Joomla 6.
+- Rimossa la copertura Joomla 5.4.8 dai workflow CI e Editor runtime.
+- Aggiunta guardia installer esplicita per bloccare Joomla precedente alla 6.1.3.
+- Aggiornati manifest componente/package, update feed, README e diagnostica versione.
+- Aggiunto test di regressione Joomla 6-only per impedire il ritorno accidentale del supporto Joomla 5.
+- Nessuna modifica a schema dati, eventi, sessioni, registrazioni, capienza, waitlist, check-in o frontend.
+
 ## 1.3.0 - 2026-09-29
 
 - Aggiunta Dashboard amministrativa con riepilogo di eventi, prossimi eventi, sessioni, registrazioni, attese e check-in.
