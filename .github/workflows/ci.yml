@@ -20,6 +20,8 @@ jobs:
         run: find component package tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: XML and metadata
         run: python3 build/validate.py
+      - name: Admin UI contract
+        run: python3 tests/admin-ui-contract.py
       - name: Smoke
         run: php tests/core-integration-smoke.php
       - name: Deterministic build A
