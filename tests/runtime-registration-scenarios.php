@@ -11,6 +11,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
+use Xdecaro\Component\Decaroevents\Site\Service\EventDescriptionSanitizer;
 use Xdecaro\Component\Decaroevents\Site\Service\RegistrationService;
 
 $container = Factory::getContainer();
@@ -85,4 +86,18 @@ if (!$duplicateRejected) {
     throw new RuntimeException('Duplicate registration on the same session must be rejected.');
 }
 
-echo "Events registration runtime scenarios OK\n";
+$unsafe = '<h2>Programma</h2><p><strong>Benvenuti</strong> <a href="javascript:alert(1)" onclick="alert(1)">link</a></p><script>alert(1)</script>';
+$clean = EventDescriptionSanitizer::sanitize($unsafe);
+
+foreach (['<h2>Programma</h2>', '<strong>Benvenuti</strong>', '<a '] as $required) {
+    if (!str_contains($clean, $required)) {
+        throw new RuntimeException('Safe rich description formatting was removed: ' . $required);
+    }
+}
+foreach (['<script', 'javascript:', 'onclick='] as $forbidden) {
+    if (stripos($clean, $forbidden) !== false) {
+        throw new RuntimeException('Unsafe rich description content survived: ' . $forbidden);
+    }
+}
+
+echo "Events registration and description runtime scenarios OK\n";
