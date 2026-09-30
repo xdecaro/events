@@ -9,6 +9,7 @@ require JPATH_BASE . '/includes/framework.php';
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
 use Xdecaro\Component\Decaroevents\Site\Service\RegistrationService;
 
@@ -21,6 +22,7 @@ $container->alias('session', 'session.cli')
 $app = $container->get(\Joomla\Console\Application::class);
 Factory::$application = $app;
 $app->createExtensionNamespaceMap();
+$app->loadIdentity($container->get(UserFactoryInterface::class)->loadUserById(0));
 
 /** @var DatabaseInterface $db */
 $db = $container->get(DatabaseInterface::class);
