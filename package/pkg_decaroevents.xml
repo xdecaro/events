@@ -2,8 +2,8 @@
 <extension type="package" method="upgrade">
   <name>Events by xdecaro</name>
   <packagename>decaroevents</packagename>
-  <version>1.3.1</version>
-  <creationDate>2026-09</creationDate>
+  <version>1.3.2</version>
+  <creationDate>2026-10</creationDate>
   <author>Luca De Caro</author>
   <license>GNU General Public License version 2 or later</license>
   <targetplatform name="joomla" version="6.*" />

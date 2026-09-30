@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.2 - 2026-10-01
+
+- Corretta la regola registrazioni: la stessa email può registrarsi a sessioni diverse dello stesso evento, mentre i duplicati della stessa sessione restano bloccati.
+- Sostituito senza perdita dati il vecchio indice UNIQUE evento+email con un indice evento+sessione+email; nessuna riga di registrazione viene modificata.
+- Le descrizioni evento create con Editor vengono ora renderizzate sul frontend conservando la formattazione consentita.
+- Aggiunto sanitizzatore allowlist basato su Joomla InputFilter per rimuovere script, handler JavaScript e URL pericolosi.
+- Aggiunti scenari runtime Joomla 6.1.3 per duplicati e sicurezza delle descrizioni.
+- Nessuna modifica a capienza, waitlist, check-in, dashboard o integrazioni Core/Editor.
+
 ## 1.3.1 - 2026-09-29
 
 - Allineato Events alla piattaforma xdecaro corrente: supporto esclusivo Joomla 6.1.3+.
@@ -39,7 +48,7 @@
 
 - Corretti i due riferimenti frontend residui al namespace Core deprecato `Xdecaro\Core`; il frontend usa ora il namespace canonico `xdecaro\Core`.
 - Rafforzato il validator per controllare tutto il PHP runtime di componente e package contro future regressioni del namespace Core.
-- Nessuna modifica alla logica di eventi, sessioni, capienza, registrazioni, waitlist e check-in; il file SQL 1.1.1 è solo un marker di versione Joomla.
+- Nessuna modifica alla logica di eventi, sessioni, capienza, registrazioni, waitlist o check-in; il file SQL 1.1.1 è solo un marker di versione Joomla.
 
 ## 1.1.0 - 2026-09-09
 

@@ -19,11 +19,13 @@ required = [
     'component/admin/sql/updates/mysql/1.2.0.sql',
     'component/admin/sql/updates/mysql/1.3.0.sql',
     'component/admin/sql/updates/mysql/1.3.1.sql',
+    'component/admin/sql/updates/mysql/1.3.2.sql',
     'component/admin/services/provider.php',
     'component/admin/src/Helper/CoreUiHelper.php',
     'component/admin/src/Model/InformationModel.php',
     'component/admin/src/Service/CoreIntegrationService.php',
     'component/site/src/Service/RegistrationService.php',
+    'component/site/src/Service/EventDescriptionSanitizer.php',
     'updates/pkg_decaroevents.xml',
 ]
 for p in required:
@@ -49,7 +51,7 @@ for p in xmls:
     except Exception as exc:
         errs.append(f'xml {p}: {exc}')
 
-if v != '1.3.1':
+if v != '1.3.2':
     errs.append('unexpected release version ' + v)
 if f'<version>{v}</version>' not in (R / 'component/decaroevents.xml').read_text(encoding='utf-8'):
     errs.append('component version mismatch')
@@ -74,10 +76,10 @@ for label, path in (
         errs.append(f'{label} must require PHP 8.3.0+')
 
 component_root = ET.parse(R / 'component/decaroevents.xml').getroot()
-install_sql = component_root.find('./install/sql/file')
-if install_sql is None or (install_sql.get('driver') or '') != 'mysql' or (install_sql.get('charset') or '') != 'utf8':
+install_sql_node = component_root.find('./install/sql/file')
+if install_sql_node is None or (install_sql_node.get('driver') or '') != 'mysql' or (install_sql_node.get('charset') or '') != 'utf8':
     errs.append('Joomla install SQL manifest must use driver="mysql" charset="utf8"')
-if install_sql is not None and (install_sql.text or '').strip() != 'sql/install.mysql.utf8mb4.sql':
+if install_sql_node is not None and (install_sql_node.text or '').strip() != 'sql/install.mysql.utf8mb4.sql':
     errs.append('install SQL path changed unexpectedly')
 
 form_root = ET.parse(R / 'component/admin/forms/event.xml').getroot()
@@ -92,14 +94,26 @@ else:
     if (description.get('filter') or '') != 'raw':
         errs.append('event description filter changed unexpectedly')
 
-sql = (R / 'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8')
+install_sql = (R / 'component/admin/sql/install.mysql.utf8mb4.sql').read_text(encoding='utf-8')
 repair = (R / 'component/admin/sql/updates/mysql/1.1.2.sql').read_text(encoding='utf-8')
-for text, label in ((sql, 'install schema'), (repair, '1.1.2 repair schema')):
+for text, label in ((install_sql, 'install schema'), (repair, '1.1.2 repair schema')):
     for marker in ('CREATE TABLE IF NOT EXISTS `#__decaroevents_events`', 'CREATE TABLE IF NOT EXISTS `#__decaroevents_sessions`', 'CREATE TABLE IF NOT EXISTS `#__decaroevents_registrations`', 'DEFAULT CHARSET=utf8mb4'):
         if marker not in text:
             errs.append(f'{label} missing {marker}')
     if re.search(r'\b(?:DROP\s+TABLE|TRUNCATE\s+TABLE)\b', text, re.I):
         errs.append('destructive SQL in ' + label)
+
+if 'UNIQUE KEY `uniq_event_email`' in install_sql:
+    errs.append('legacy event-wide registration unique index remains in install schema')
+if 'KEY `idx_event_session_email` (`event_id`,`session_id`,`email`)' not in install_sql:
+    errs.append('session-scoped registration index missing from install schema')
+
+migration_132 = (R / 'component/admin/sql/updates/mysql/1.3.2.sql').read_text(encoding='utf-8')
+for marker in ('DROP INDEX `uniq_event_email`', 'ADD KEY `idx_event_session_email` (`event_id`,`session_id`,`email`)'):
+    if marker not in migration_132:
+        errs.append('1.3.2 registration migration missing ' + marker)
+if re.search(r'\b(?:DROP\s+TABLE|TRUNCATE\s+TABLE|DELETE\s+FROM)\b', migration_132, re.I):
+    errs.append('destructive data operation in 1.3.2 registration migration')
 
 for root in (R / 'component', R / 'package'):
     for path in root.rglob('*.php'):
@@ -129,9 +143,20 @@ if 'class PkgDecaroeventsInstallerScript' in runtime['package installer']:
     errs.append('incorrect legacy package installer class name remains')
 
 site = (R / 'component/site/src/Service/RegistrationService.php').read_text(encoding='utf-8')
-for marker in ['FOR UPDATE', 'transactionStart', 'waitlist']:
+for marker in ['FOR UPDATE', 'transactionStart', 'waitlist', 'duplicateSession', "session_id') . ' IS NULL"]:
     if marker not in site:
-        errs.append('registration concurrency contract missing ' + marker)
+        errs.append('registration runtime contract missing ' + marker)
+
+sanitizer = (R / 'component/site/src/Service/EventDescriptionSanitizer.php').read_text(encoding='utf-8')
+for marker in ['Joomla\\CMS\\Filter\\InputFilter', 'ONLY_ALLOW_DEFINED_TAGS', 'ONLY_ALLOW_DEFINED_ATTRIBUTES', "'href'"]:
+    if marker not in sanitizer:
+        errs.append('description sanitizer contract missing ' + marker)
+
+template = (R / 'component/site/tmpl/event/default.php').read_text(encoding='utf-8')
+if 'EventDescriptionSanitizer::sanitize' not in template:
+    errs.append('event frontend must sanitize rich description before rendering')
+if 'nl2br($e($this->item->description))' in template:
+    errs.append('event frontend still escapes rich description as plain text')
 
 if errs:
     print('\n'.join(errs))
