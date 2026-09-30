@@ -48,7 +48,7 @@
 
 - Corretti i due riferimenti frontend residui al namespace Core deprecato `Xdecaro\Core`; il frontend usa ora il namespace canonico `xdecaro\Core`.
 - Rafforzato il validator per controllare tutto il PHP runtime di componente e package contro future regressioni del namespace Core.
-- Nessuna modifica alla logica di eventi, sessioni, capienza, registrazioni, waitlist o check-in; il file SQL 1.1.1 è solo un marker di versione Joomla.
+- Nessuna modifica alla logica di eventi, sessioni, capienza, registrazioni, waitlist e check-in; il file SQL 1.1.1 è solo un marker di versione Joomla.
 
 ## 1.1.0 - 2026-09-09
 
