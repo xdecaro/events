@@ -141,3 +141,15 @@ jobs:
           schema="$("${MYSQL[@]}" -e "SELECT s.version_id FROM evt_schemas s JOIN evt_extensions e ON e.extension_id=s.extension_id WHERE e.type='component' AND e.element='com_decaroevents' LIMIT 1;")"
           echo "events_schema=${schema}"
           test "$schema" = "$VERSION"
+          legacy_unique="$("${MYSQL[@]}" -e "SELECT COUNT(DISTINCT INDEX_NAME) FROM information_schema.statistics WHERE TABLE_SCHEMA='joomla' AND TABLE_NAME='evt_decaroevents_registrations' AND INDEX_NAME='uniq_event_email';")"
+          session_index="$("${MYSQL[@]}" -e "SELECT COUNT(DISTINCT INDEX_NAME) FROM information_schema.statistics WHERE TABLE_SCHEMA='joomla' AND TABLE_NAME='evt_decaroevents_registrations' AND INDEX_NAME='idx_event_session_email';")"
+          echo "legacy_unique=${legacy_unique} session_index=${session_index}"
+          test "$legacy_unique" = '0'
+          test "$session_index" = '1'
+      - name: Registration runtime scenarios
+        if: matrix.mode == 'clean'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd joomla
+          php "$GITHUB_WORKSPACE/tests/runtime-registration-scenarios.php"

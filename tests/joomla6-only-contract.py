@@ -7,8 +7,8 @@ R = Path(__file__).resolve().parents[1]
 errors = []
 
 version = (R / 'VERSION').read_text(encoding='utf-8').strip()
-if version != '1.3.1':
-    errors.append(f'expected Events 1.3.1, found {version}')
+if version != '1.3.2':
+    errors.append(f'expected Events 1.3.2, found {version}')
 
 component = ET.parse(R / 'component/decaroevents.xml').getroot()
 package = ET.parse(R / 'package/pkg_decaroevents.xml').getroot()

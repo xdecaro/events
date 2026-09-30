@@ -53,8 +53,14 @@ final class RegistrationService
                 ->where($db->quoteName('status') . ' <> ' . $db->quote('cancelled'))
                 ->bind(':event', $eventId, ParameterType::INTEGER)
                 ->bind(':email', $email);
+            if ($sessionId > 0) {
+                $query->where($db->quoteName('session_id') . ' = :duplicateSession')
+                    ->bind(':duplicateSession', $sessionId, ParameterType::INTEGER);
+            } else {
+                $query->where($db->quoteName('session_id') . ' IS NULL');
+            }
             if ((int) $db->setQuery($query)->loadResult() > 0) {
-                throw new \RuntimeException('Esiste già una registrazione con questa email.');
+                throw new \RuntimeException('Esiste già una registrazione con questa email per questa sessione.');
             }
 
             $status = 'confirmed';

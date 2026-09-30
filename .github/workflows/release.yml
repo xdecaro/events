@@ -48,6 +48,8 @@ jobs:
           unzip -t "dist/pkg_decaroevents_${VERSION}.zip" >/dev/null
           unzip -p "dist/com_decaroevents_${VERSION}.zip" decaroevents.xml | grep -F 'charset="utf8"'
           unzip -l "dist/com_decaroevents_${VERSION}.zip" | grep -F "admin/sql/updates/mysql/${VERSION}.sql"
+          unzip -p "dist/com_decaroevents_${VERSION}.zip" site/src/Service/EventDescriptionSanitizer.php | grep -F 'ONLY_ALLOW_DEFINED_TAGS'
+          unzip -p "dist/com_decaroevents_${VERSION}.zip" admin/sql/install.mysql.utf8mb4.sql | grep -F 'idx_event_session_email'
           unzip -p "dist/pkg_decaroevents_${VERSION}.zip" script.php | grep -F 'final class pkg_decaroeventsInstallerScript'
           unzip -p "dist/pkg_decaroevents_${VERSION}.zip" script.php | grep -F "MINIMUM_JOOMLA = '6.1.3'"
       - name: Release
@@ -59,7 +61,7 @@ jobs:
             "dist/pkg_decaroevents_${VERSION}.zip" \
             dist/SHA256SUMS.txt \
             --title "Events by xdecaro ${VERSION}" \
-            --notes "Events ${VERSION}: Joomla 6.1.3+ only with PHP 8.3+. Removes Joomla 5 compatibility metadata and runtime coverage, adds an installer guard, and preserves the Events 1.3 backend/dashboard behavior and existing data model."
+            --notes "Events ${VERSION}: fixes session-scoped duplicate registration handling and safely renders rich event descriptions through a Joomla InputFilter allowlist. Joomla 6.1.3+ and PHP 8.3+ remain required; capacity, waitlist, check-in, dashboard and Core/Editor integration are unchanged."
       - name: Publish feed checksum
         run: |
           git config user.name "github-actions[bot]"
