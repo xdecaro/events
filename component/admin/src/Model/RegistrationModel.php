@@ -68,11 +68,17 @@ final class RegistrationModel extends AdminModel
                 ->where($db->quoteName('email') . ' = :email')
                 ->bind(':event', $eventId, ParameterType::INTEGER)
                 ->bind(':email', $email);
+            if ($sessionId > 0) {
+                $query->where($db->quoteName('session_id') . ' = :duplicateSession')
+                    ->bind(':duplicateSession', $sessionId, ParameterType::INTEGER);
+            } else {
+                $query->where($db->quoteName('session_id') . ' IS NULL');
+            }
             if ($id > 0) {
                 $query->where($db->quoteName('id') . ' <> :id')->bind(':id', $id, ParameterType::INTEGER);
             }
             if ((int) $db->setQuery($query)->loadResult() > 0) {
-                throw new \RuntimeException('Esiste già una registrazione per questa email e questo evento.');
+                throw new \RuntimeException('Esiste già una registrazione per questa email e questa sessione.');
             }
         }
 
