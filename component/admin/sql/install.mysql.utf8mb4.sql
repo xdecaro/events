@@ -48,6 +48,6 @@ CREATE TABLE IF NOT EXISTS `#__decaroevents_registrations` (
   PRIMARY KEY (`id`),
   KEY `idx_event_status` (`event_id`,`status`),
   KEY `idx_session_status` (`session_id`,`status`),
-  UNIQUE KEY `uniq_event_email` (`event_id`,`email`),
+  KEY `idx_event_session_email` (`event_id`,`session_id`,`email`),
   KEY `idx_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
