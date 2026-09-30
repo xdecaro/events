@@ -86,10 +86,10 @@ if (!$duplicateRejected) {
     throw new RuntimeException('Duplicate registration on the same session must be rejected.');
 }
 
-$unsafe = '<h2>Programma</h2><p><strong>Benvenuti</strong> <a href="javascript:alert(1)" onclick="alert(1)">link</a></p><script>alert(1)</script>';
+$unsafe = '<h2>Programma</h2><p><strong>Benvenuti</strong> <a href="https://example.com" title="Info">link sicuro</a> <a href="javascript:alert(1)" onclick="alert(1)">link pericoloso</a></p><script>alert(1)</script>';
 $clean = EventDescriptionSanitizer::sanitize($unsafe);
 
-foreach (['<h2>Programma</h2>', '<strong>Benvenuti</strong>', '<a '] as $required) {
+foreach (['<h2>Programma</h2>', '<strong>Benvenuti</strong>', 'https://example.com', 'link sicuro'] as $required) {
     if (!str_contains($clean, $required)) {
         throw new RuntimeException('Safe rich description formatting was removed: ' . $required);
     }
